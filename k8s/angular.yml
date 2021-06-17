@@ -1,0 +1,44 @@
+#Create a deployment by using the image pushed to Docker Hub
+#Use containerPort 4200
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: angular-frontend-deployment
+  labels:
+    app: angular-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: angular-frontend
+  template:
+    metadata:
+      labels:
+        app: angular-frontend
+    spec:
+      containers:
+      - name: angular-frontend
+        image: goyalsweta/angular_frontend:1.0
+        ports:
+        - containerPort: 4200
+---
+#Create the service of type NodePort and use the created deployment as selector
+# Use port 4200
+apiVersion: v1
+kind: Service
+metadata:
+  name: angular-frontend-service
+  labels:
+    app: angular-frontend
+spec:
+  type: NodePort
+  selector:
+    app: angular-frontend
+  ports:
+    - port: 4200
+      protocol: TCP
+      targetPort: 4200
+      # Optional field
+      # By default and for convenience, the Kubernetes control plane will allocate a port from a range (default: 30000-32767)
+      nodePort: 30010
+

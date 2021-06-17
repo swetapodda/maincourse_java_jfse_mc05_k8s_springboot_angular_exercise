@@ -1,0 +1,45 @@
+#Create a deployment by using the image pushed to Docker Hub
+#Use containerPort 8081
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sbservice-deployment
+  labels:
+    app: sbservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sbservice
+  template:
+    metadata:
+      labels:
+        app: sbservice
+    spec:
+      containers:
+      - name: sbservice
+        image: goyalsweta/sbservice:2.0
+        ports:
+        - containerPort: 8081
+---
+#Create the service of type NodePort and use the created deployment as selector
+#Use port 8081
+#Assign nodePort to some port in valid range, so that it can be used in angular
+apiVersion: v1
+kind: Service
+metadata:
+  name: sbservice-service
+  labels:
+    app: sbservice
+spec:
+  type: NodePort
+  selector:
+    app: sbservice
+  ports:
+    - port: 8081
+      protocol: TCP
+      targetPort: 8081
+      # Optional field
+      # By default and for convenience, the Kubernetes control plane will allocate a port from a range (default: 30000-32767)
+      nodePort: 30009
+
